@@ -1,4 +1,4 @@
-# MANUAL DE DESARROLLO Y ARQUITECTURA: COCIACERO
+# MANUAL DE DESARROLLO Y ARQUITECTURA: COCINACERO
 *Una guía técnica profunda sobre el diseño, algoritmos y despliegue del inventario inteligente*
 
 ---
