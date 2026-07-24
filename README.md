@@ -1,60 +1,87 @@
-# CocinaCero - Arquitectura y Núcleo Lógico 🍳🌱
+# CocinaCero — Inventario Inteligente y Recetas Zero-Waste
 
-> *Innovación en la gestión del hogar inteligente para la erradicación del desperdicio alimentario.*
-
-**CocinaCero** es una plataforma tecnológica que combina la gestión de inventarios en tiempo real, alertas lógicas de caducidad y un motor de sugerencia de recetas centrado en el *"Aprovechamiento Máximo" (Zero-Waste Engine)*.
+CocinaCero es una aplicación móvil híbrida desarrollada con **React 18**, **Ionic React** y **Capacitor 6**. Su objetivo principal es combatir el desperdicio de comida en el hogar, proporcionando un control visual e interactivo de los alimentos y sugiriendo preparaciones basadas en la urgencia de consumo de los ingredientes disponibles.
 
 ---
 
-## 🏗️ 1. Modelado de Entidades (`src/models/types.ts`)
+## 1. Descripción del Problema y Enfoque de Usuario
 
-El modelo de dominio está diseñado en TypeScript bajo principios de tipado estricto y alta cohesión.
+### El Problema
+El desperdicio de alimentos es un problema doméstico que impacta negativamente en la economía de los hogares y en el medio ambiente. En la rutina diaria, los alimentos se pierden por dos factores:
+1. **Invisibilidad**: La comida se almacena y se olvida al fondo de la alacena o refrigerador.
+2. **Bloqueo Creativo**: El usuario tiene ingredientes aislados, pero no sabe qué cocinar con ellos antes de que se venzan.
 
-### Entidades Principales:
-* **`FoodItem`**: Representa el ítem de inventario en el hogar. Almacena `id`, `name`, `normalizedName` (sin acentos, en minúsculas para comparaciones O(1)), `quantity`, `unit`, `expirationDate`, y `category`.
-* **`Recipe` & `RecipeIngredient`**: Define las recetas culinarias. `RecipeIngredient` incluye `isOptional: boolean`, crucial para no penalizar recetas que solo carecen de especias decorativas u opcionales.
-* **`ConsumptionLog`**: Trazabilidad del destino del alimento (`CONSUMED` vs `DISCARDED`) con motivos técnicos y valoración económica para reportes de impacto medioambiental/ahorro.
-* **`ExpirationAlert`**: Estructura de salida preparada para disparar push notifications o feeds de alertas in-app con niveles de prioridad (1 = Vencido/Urgente, 2 = Crítico/Hoy-Mañana, 3 = Advertencia).
-
----
-
-## 🔍 2. Algoritmo de Matching ("Zero-Waste Engine") (`src/services/recipeMatcherService.ts`)
-
-A diferencia de los buscadores de recetas tradicionales que solo buscan coincidencias exactas o filtran en modo "todo o nada", **CocinaCero Engine** soluciona tres grandes retos de ingeniería:
-
-1. **Normalización Lingüística (`normalizeText`)**: Limpia mayúsculas, espacios diacríticos y tildes (`"Tomates Maduros"` $\rightarrow$ `"tomate"`).
-2. **Compatibilidad de Unidades (`isQuantitySufficient`)**: Convierte dinámicamente magnitudes afines (`kg` a `g`, `l` a `ml`) para no descartar una receta que pide `500g` si el inventario tiene `1kg`.
-3. **Puntuación de Rescate (`zeroWasteScore`)**:
-   * Cada ingrediente de la receta que coincide con un alimento del inventario en estado **`CRITICAL` (vence hoy/mañana)** otorga **+50 puntos de rescate**.
-   * Si coincide con un alimento en estado **`WARNING` (vence en 3-5 días)** otorga **+20 puntos**.
-   * **Resultado:** Las recetas sugeridas se ordenan priorizando primero aquellas 100% cocinables con el inventario actual y, en segundo lugar, por la cantidad de alimentos a punto de pudrirse que salvan.
+### Usuario y Alcance No Universitario
+La aplicación está diseñada para **familias, jefes de hogar y personas que cocinan a diario en casa**. El lenguaje, los iconos y los flujos son sencillos y visuales, asegurando que cualquier usuario sin conocimientos tecnológicos o académicos pueda escanear un producto, ver qué está por vencer en un semáforo de colores y presionar un botón para saber qué almorzar hoy.
 
 ---
 
-## 🧪 3. Pruebas Unitarias (`tests/`)
+## 2. Instalación y Ejecución
 
-Se ha configurado un suite de pruebas determinista utilizando **Vitest**:
+### Requisitos Previos
+* **Node.js** (Versión 18 o superior).
+* **npm** (Instalado junto con Node.js).
+* **Java Development Kit (JDK) 17** (Solo si deseas compilar la APK de Android nativa).
 
-* **`tests/expirationService.test.ts`**:
-  * Verifica el cálculo de días de diferencia (`calculateDaysRemaining`) con fechas fijas (`normalizeToMidnightUTC`).
-  * Valida las fronteras de decisión de estado (`EXPIRED < 0`, `CRITICAL 0..2`, `WARNING 3..5`, `GOOD > 5`).
-  * Comprueba que la cola de notificaciones (`getExpirationAlerts`) ordene por urgencia (Prioridad 1 $\rightarrow$ 2 $\rightarrow$ 3).
-* **`tests/recipeMatcherService.test.ts`**:
-  * Valida conversiones de unidades y tolerancias (`isQuantitySufficient`).
-  * Comprueba que los ingredientes opcionales no bloqueen la viabilidad de una receta (`canBeCooked`).
-  * Asegura la asignación de puntajes `zeroWasteScore`.
+### Ejecución Local en Navegador
+1. Instala las dependencias del proyecto:
+   ```bash
+   npm install
+   ```
+2. Inicia el servidor de desarrollo local:
+   ```bash
+   npm run dev
+   ```
+   *La aplicación estará disponible por defecto en [http://localhost:5173/](http://localhost:5173/).*
 
----
-
-## 🚀 Cómo Ejecutar en el Entorno Local
-
+### Ejecución de Pruebas Unitarias
+El proyecto cuenta con una suite de pruebas automatizadas con Vitest para validar la lógica del motor:
 ```bash
-# Instalar dependencias (si se requiere desarrollar/probar en un entorno Node/TypeScript)
-npm install
-
-# Compilar TypeScript a JavaScript
-npm run build
-
-# Ejecutar la suite de pruebas unitarias
 npm test
 ```
+
+### Compilación de APK de Android
+Para generar la aplicación nativa de Android, ejecuta el script automatizado en Windows:
+```bash
+./build-apk.bat
+```
+*Este comando compilará el frontend, sincronizará Capacitor y llamará a Gradle para generar el archivo `CocinaCero.apk` en la raíz del proyecto.*
+
+---
+
+## 3. Organización Técnica del Proyecto
+
+El código está estructurado de manera modular y por capas para separar la interfaz de usuario de la lógica de negocio:
+
+```text
+Proyecto-Cocina/
+├── src/
+│   ├── components/                 # CAPA DE PRESENTACIÓN (Vistas e Interfaces)
+│   │   ├── DashboardOverview.tsx   # Panel de control con estadísticas y alertas de vencimiento.
+│   │   ├── InventoryView.tsx       # Inventario de despensa con semáforo y filtros.
+│   │   ├── RecipesView.tsx         # Recomendador de recetas ordenadas por Zero-Waste Score.
+│   │   ├── HistoryView.tsx         # Historial de alimentos aprovechados y desechados.
+│   │   ├── BarcodeScannerModal.tsx # Lector de cámara integrado con Html5Qrcode.
+│   │   └── AddFoodModal.tsx        # Formulario de registro de alimentos.
+│   ├── services/                   # CAPA LÓGICA DE NEGOCIO (Servicios puros en TS)
+│   │   ├── barcodeService.ts       # Conexión externa a Open Food Facts y parser offline de QR.
+│   │   ├── expirationService.ts    # Algoritmo de cálculo de días de vida útil y semáforos.
+│   │   └── recipeMatcherService.ts # Motor de emparejamiento de ingredientes y recetas.
+│   ├── models/
+│   │   └── types.ts                # CAPA DE DATOS: Tipados e interfaces TypeScript del dominio.
+│   ├── data/
+│   │   └── initialData.ts          # Semillas de datos simulados (Mock Data).
+│   ├── App.tsx                     # Orquestador del estado global de la aplicación.
+│   └── index.css                   # Diseño visual Dark Mode y variables CSS globales.
+├── tests/                          # CAPA DE CALIDAD (Tests unitarios automatizados)
+│   ├── expirationService.test.ts
+│   └── recipeMatcherService.test.ts
+```
+
+---
+
+## 4. Datos Simulados de Prueba
+De acuerdo con las políticas de uso responsable de IA, la aplicación **no utiliza datos sensibles reales de usuarios**. La base inicial se nutre de datos de prueba simulados que puedes ver y modificar en `src/data/initialData.ts`:
+* **Inventario de Alimentos**: Yogur, Pechuga de Pollo, Tomates, Queso Mozzarella, Espinacas y Huevos, todos con fechas de vencimiento calculadas dinámicamente en base al día de hoy para poder probar el semáforo en vivo.
+* **Recetas Semilla**: Wok de Pollo, Ensalada Caprese, Tortilla de Espinacas y Queso, y Arroz con Pollo.
+* **Historial Inicial**: Un log de consumos y desechos previos para que el Dashboard muestre estadísticas financieras desde el primer inicio.
