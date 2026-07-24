@@ -7,7 +7,6 @@
 *   **Nombre Oficial**: CocinaCero
 *   **Versión**: 1.0.0
 *   **Licencia**: MIT
-*   **Autores**: Antigravity & LAB103
 *   **Tecnologías Principales**: React 18, Ionic React, Capacitor 6, TypeScript, Vite, HTML5-QRCode, Vitest.
 
 ---
