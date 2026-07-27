@@ -1,0 +1,16 @@
+# FICHA DE PLANIFICACIÓN: COCINACERO (GRUPO 8)
+**Actividad 15**: Informe de Actividad Previa  
+**Proyecto**: CocinaCero — Control de Alimentos e Impacto Zero-Waste  
+
+---
+
+| Campo | Contenido de Planificación del Proyecto |
+| :--- | :--- |
+| **1. Problema y usuario** | **Problema**: El desperdicio alimentario y pérdida económica en los hogares ocurre por una desconexión visual y olvido de los productos guardados al fondo del refrigerador/alacena.<br>**Usuario**: Familias comunes, encargados del hogar y cocineros domésticos (ámbito no académico/técnico). |
+| **2. Propuesta de valor** | *"CocinaCero reduce el desperdicio de comida y ahorra dinero en casa mediante una despensa visual inteligente conectada a un recomendador de recetas que prioriza consumir hoy los ingredientes más próximos a vencer."* |
+| **3. Funcionalidades clave** | 1. **Semáforo dinámico** de alertas de caducidad en el inventario (Verde / Amarillo / Naranja pulsante / Rojo).<br>2. **Escáner de cámara multiprotocolo** (Offline para códigos QR del hogar y Online para códigos de barra comerciales vía API).<br>3. **Recomendador de recetas por Zero-Waste Score** (prioriza platos que salvan insumos críticos).<br>4. **Historial y KPI financiero** de pérdidas y consumo. |
+| **4. Pantallas y navegación** | Navegación inferior persistente basada en pestañas (Tabs):<br>`Dashboard` (KPIs financieros y de estado) $\leftrightarrow$ `Despensa` (Inventario + Modal de Registro manual/Cámara) $\leftrightarrow$ `Recetas` (Lista ordenada de platos + Modal de ingredientes requeridos) $\leftrightarrow$ `Historial` (Log de alimentos consumidos y desechados). |
+| **5. Stack tecnológico** | **Framework**: React 18 + Ionic React + Capacitor 6 (justificado para empaquetar código web nativo y ejecutar cámaras WebView sin puentes Java/Swift complejos).<br>**Herramienta de IA**: Google Antigravity (AGY) + Gemini (justificado por su capacidad de co-programación contextualizada en el sistema de archivos local). |
+| **6. Datos de la app** | **Información manejada**: Inventario de alimentos (`FoodItem`) con nombre, categoría, peso/unidad y fecha de vencimiento; y recetas (`Recipe`) con ingredientes y cantidades requeridas.<br>**Almacenamiento**: Estado reactivo en memoria (`useState`) con semillas de datos precargadas (Mock) para pruebas inmediatas en la demo. |
+| **7. Plan de prompts** | 1. *Core SPA*: SPA en Ionic con 4 pestañas y datos iniciales.<br>2. *Lector de Cámara*: Integrar visor de cámara `html5-qrcode` con API externa y Query String parser offline.<br>3. *Lógica de Ajustes*: Implementar pasos lógicos unitarios fijos (kg/g) y sanitizar precisión de decimales.<br>4. *Permisos del SO*: Programar solicitud nativa de permisos en Android al inicio de la app. |
+| **8. Riesgos y qué se va a demostrar** | **Riesgos**: Volatilidad de los datos (al no haber SQLite/base de datos física, se borran al cerrar del todo la app) y dependencia de internet en supermercados para códigos de barras.<br>**Demo Mínima**: Registro instantáneo vía escaneo QR offline, actualización fina a 2 decimales ($1.56\text{ kg}$), visualización del semáforo crítico y listado automático de recetas priorizando el uso de pollo a punto de vencer. |
